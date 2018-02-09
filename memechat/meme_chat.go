@@ -11,6 +11,7 @@ import (
 
 const memeSearchEndpoint = "https://imgflip.com/memesearch?q="
 const memePageEndpoint = "https://imgflip.com"
+const memeURLTemplate = "https://imgflip.com/s/meme/"
 
 func getAttr(query string, selector string, attr string) (string, error) {
 	doc, err := goquery.NewDocument(query)
@@ -24,22 +25,35 @@ func getAttr(query string, selector string, attr string) (string, error) {
 	memeURL, ok := imageRes.Attr(attr)
 	if ok != true {
 		err := fmt.Errorf("Could not find attr %v for query: %v", attr, query)
-		log.Fatal(err)
+		// log.(err)
 		return "", err
 	}
 	return memeURL, nil
 }
 
 func getMemePageURL(memeName string) (string, error) {
+	if memeName == "" {
+		return "", nil
+	}
 	queryParam := url.QueryEscape(memeName)
 	query := memeSearchEndpoint + queryParam
 	return getAttr(query, "#memeTemplates .mt-box .mt-caption", "href")
 }
 
-func getMemeImageURL(memeURL string) string {
+func parseMemeURL(memeURL string) string {
 	// memeUrl normally contains "/memegenerator/<meme_name>", extract meme_name
 	arrURL := strings.Split(memeURL, "/")
 	return arrURL[len(arrURL)-1]
+}
+
+func GetMemeImageURL(searchMemeName string) string {
+	memeURL, err := getMemePageURL(searchMemeName)
+	memeName := parseMemeURL(memeURL)
+	if err != nil {
+		// log.Fatal(err)
+		log.Println(err)
+	}
+	return memeURLTemplate + memeName + ".jpg"
 }
 
 // func GetImageUrlForMeme(memeName string) (string, error) {

@@ -19,9 +19,13 @@ func messageHandler(msg *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 func inlineQueryHandler(inlineQuery *tgbotapi.InlineQuery, bot *tgbotapi.BotAPI) {
 	log.Printf("===== I got an Inline Query!! =====")
 
-	reply := tgbotapi.NewInlineQueryResultPhoto(inlineQuery.ID, "http://i1.kym-cdn.com/photos/images/original/001/136/185/604.jpg")
+	memeQuery := inlineQuery.Query
+
+	memeURL := GetMemeImageURL(memeQuery)
+
+	reply := tgbotapi.NewInlineQueryResultPhoto(inlineQuery.ID, memeURL)
 	reply.Description = inlineQuery.Query
-	reply.ThumbURL = "http://i1.kym-cdn.com/photos/images/original/001/136/185/604.jpg"
+	reply.ThumbURL = memeURL
 	inlineConf := tgbotapi.InlineConfig{
 		InlineQueryID: inlineQuery.ID,
 		IsPersonal:    true,
